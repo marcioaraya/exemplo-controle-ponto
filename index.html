@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Empregados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .empregado {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Controle de Empregados</h1>
+    <p>Código gerado pelo ChatGPT</p>
+    
+    <input type="text" id="nomeEmpregado" placeholder="Nome do Empregado" />
+    <button id="adicionarEmpregado">Adicionar Empregado</button>
+
+    <div id="listaEmpregados"></div>
+
+    <script>
+        // Função para criar um novo empregado
+        function criarEmpregado(nome) {
+            return {
+                nome: nome,
+                horarioEntrada: null,
+                horarioSaida: null,
+
+                registrarEntrada: function() {
+                    this.horarioEntrada = new Date().toLocaleString();
+                    salvarEmpregados();
+                },
+
+                registrarSaida: function() {
+                    this.horarioSaida = new Date().toLocaleString();
+                    salvarEmpregados();
+                }
+            };
+        }
+
+        // Array que irá armazenar todos os empregados
+        let empregados = [];
+
+        // Função para salvar os empregados no localStorage
+        function salvarEmpregados() {
+            localStorage.setItem('empregados', JSON.stringify(empregados));
+            renderizarEmpregados();
+        }
+
+        // Função para carregar os empregados do localStorage
+        function carregarEmpregados() {
+            const empregadosSalvos = localStorage.getItem('empregados');
+            if (empregadosSalvos) {
+                empregados = JSON.parse(empregadosSalvos);
+            }
+            renderizarEmpregados();
+        }
+
+        // Função para adicionar um empregado
+        function adicionarEmpregado(nome) {
+            const novoEmpregado = criarEmpregado(nome);
+            empregados.push(novoEmpregado);
+            salvarEmpregados();
+        }
+
+        // Função para renderizar a lista de empregados
+        function renderizarEmpregados() {
+            const listaEmpregados = document.getElementById('listaEmpregados');
+            listaEmpregados.innerHTML = '';
+
+            empregados.forEach((empregado, index) => {
+                const divEmpregado = document.createElement('div');
+                divEmpregado.className = 'empregado';
+                divEmpregado.innerHTML = `
+                    <strong>${empregado.nome}</strong><br>
+                    Entrada: ${empregado.horarioEntrada || 'Não registrada'}<br>
+                    Saída: ${empregado.horarioSaida || 'Não registrada'}<br>
+                    <button onclick="registrarEntrada(${index})">Registrar Entrada</button>
+                    <button onclick="registrarSaida(${index})">Registrar Saída</button>
+                `;
+                listaEmpregados.appendChild(divEmpregado);
+            });
+        }
+
+        // Funções para registrar entrada e saída
+        function registrarEntrada(index) {
+            empregados[index].registrarEntrada();
+            alert(`Entrada registrada para ${empregados[index].nome}`);
+        }
+
+        function registrarSaida(index) {
+            empregados[index].registrarSaida();
+            alert(`Saída registrada para ${empregados[index].nome}`);
+        }
+
+        // Carregar empregados ao iniciar
+        carregarEmpregados();
+
+        // Evento para adicionar empregado
+        document.getElementById('adicionarEmpregado').addEventListener('click', () => {
+            const nomeEmpregado = document.getElementById('nomeEmpregado').value.trim();
+            if (nomeEmpregado) {
+                adicionarEmpregado(nomeEmpregado);
+                document.getElementById('nomeEmpregado').value = '';
+            } else {
+                alert('Por favor, insira um nome.');
+            }
+        });
+    </script>
+</body>
+</html>
